@@ -17,3 +17,12 @@ class ViewController: UIViewController {
 
 }
 
+struct todo {
+    var id: Int
+    var title: String
+    var isDone: Bool
+//    var importance: Int
+//    var isLocked: Bool
+//    var password: String
+//    let dueDate: String   기한설정 스트링 ?
+}
