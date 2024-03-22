@@ -9,9 +9,10 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    var todoList: Array<Array<todo>> = []
+    var todoList: Array<todo> = []
+    var todoRealList: Array<Array<todo>> = []
     
-    var testList = [["테스트 데이터 1", "테스트 데이터2", "테스트 데이터3", "ㅁㄴㅇㄹ", "ㅁㄴㅇㅁㄹ", "훌랄라숯불바베큐", "먹고싶다", "아니 왜 요기는 바로 반영돼?", "테스트 데이터 1", "테스트 데이터2", "테스트 데이터3", "ㅁㄴㅇㄹ", "ㅁㄴㅇㅁㄹ", "훌랄라숯불바베큐", "먹고싶다","테스트 데이터 1", "테스트 데이터2", "테스트 데이터3", "ㅁㄴㅇㄹ", "ㅁㄴㅇㅁㄹ", "훌랄라숯불바베큐", "먹고싶다",]]
+    var testList = [["테스트 데이터 1", "테스트 데이터2", "테스트 데이터3", "ㅁㄴㅇㄹ",]]
     
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
 
@@ -51,28 +52,31 @@ class ViewController: UIViewController {
     
     @objc func didTapAddButton() {
         print("버튼 누름")
-        let test = todo(id: todoList.count, title: "훌랄라 숯불 바베큐", isDone: false)
-        print(todoList)
-        todoList.append([test])
+        let test = todo(id: todoList.count, title: "훌랄라 숯불 바베큐\(todoList.count)", isDone: false)
+//        print(todoList)
+        todoList.append(test)
+        todoRealList = [todoList]
         testList[0].append("데이터 하나씩 추가")
-        print(testList[0].count)
-        super.viewDidLoad()
+        print(todoList.count)
+        print(todoList)
+        tableView.reloadData()
     }
 }
 
 extension ViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if todoList.isEmpty {
+        if todoRealList.isEmpty {
             return testList[section].count
-        } else {return todoList[section].count}
+        } else {return todoRealList[section].count}
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .default, reuseIdentifier: .none)
-        if todoList.isEmpty {
+        cell.imageView?.image = UIImage(systemName: "square")
+        if todoRealList.isEmpty {
             cell.textLabel?.text = testList[indexPath.section][indexPath.row]
-        } else {cell.textLabel?.text = todoList[indexPath.section][indexPath.row].title}
+        } else {cell.textLabel?.text = todoRealList[indexPath.section][indexPath.row].title}
 
         return cell
     }
