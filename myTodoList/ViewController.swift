@@ -52,13 +52,9 @@ class ViewController: UIViewController {
     
     @objc func didTapAddButton() {
         print("버튼 누름")
-        let test = todo(id: todoList.count, title: "훌랄라 숯불 바베큐\(todoList.count)", isDone: false)
-//        print(todoList)
-        todoList.append(test)
+        let myTodo = todo(id: todoList.count, title: "훌랄라 숯불 바베큐\(todoList.count)", isDone: false)
+        todoList.append(myTodo)
         todoRealList = [todoList]
-        testList[0].append("데이터 하나씩 추가")
-        print(todoList.count)
-        print(todoList)
         tableView.reloadData()
     }
 }
