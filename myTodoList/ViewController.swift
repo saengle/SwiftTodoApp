@@ -9,15 +9,14 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    var testList = [["테스트 데이터 1", "테스트 데이터2", "테스트 데이터3"]]
+    var todoList: Array<Array<todo>> = []
+    
+    var testList = [["테스트 데이터 1", "테스트 데이터2", "테스트 데이터3", "ㅁㄴㅇㄹ", "ㅁㄴㅇㅁㄹ", "훌랄라숯불바베큐", "먹고싶다", "아니 왜 요기는 바로 반영돼?", "테스트 데이터 1", "테스트 데이터2", "테스트 데이터3", "ㅁㄴㅇㄹ", "ㅁㄴㅇㅁㄹ", "훌랄라숯불바베큐", "먹고싶다","테스트 데이터 1", "테스트 데이터2", "테스트 데이터3", "ㅁㄴㅇㄹ", "ㅁㄴㅇㅁㄹ", "훌랄라숯불바베큐", "먹고싶다",]]
     
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
 
     private let button: UIButton = {
         let button = UIButton()
-//            button.setTitle("아무말이없어서?", for: .normal)
-//            button.backgroundColor = .systemBlue
-//            button.layer.cornerRadius = 7
         button.setImage(UIImage(systemName: "plus.circle"), for: .normal)
         return button
     }()
@@ -42,9 +41,8 @@ class ViewController: UIViewController {
         NSLayoutConstraint.activate([
             button.centerXAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -25),
             button.centerYAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 15),
-//            button.widthAnchor.constraint(equalToConstant: 300),
-//            button.heightAnchor.constraint(equalToConstant: 300),
-            self.tableView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
+            
+            self.tableView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 30),
             self.tableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
             self.tableView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
             self.tableView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor),
@@ -53,17 +51,29 @@ class ViewController: UIViewController {
     
     @objc func didTapAddButton() {
         print("버튼 누름")
+        let test = todo(id: todoList.count, title: "훌랄라 숯불 바베큐", isDone: false)
+        print(todoList)
+        todoList.append([test])
+        testList[0].append("데이터 하나씩 추가")
+        print(testList[0].count)
+        super.viewDidLoad()
     }
 }
 
 extension ViewController: UITableViewDataSource {
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return testList[section].count
+        if todoList.isEmpty {
+            return testList[section].count
+        } else {return todoList[section].count}
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .default, reuseIdentifier: .none)
-        cell.textLabel?.text = testList[indexPath.section][indexPath.row]
+        if todoList.isEmpty {
+            cell.textLabel?.text = testList[indexPath.section][indexPath.row]
+        } else {cell.textLabel?.text = todoList[indexPath.section][indexPath.row].title}
+
         return cell
     }
 }
