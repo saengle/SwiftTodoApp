@@ -12,7 +12,7 @@ class ViewController: UIViewController {
     var todoList: Array<todo> = []
     var todoRealList: Array<Array<todo>> = []
     
-    var testList = [["테스트 데이터 1", "테스트 데이터2", "테스트 데이터3", "ㅁㄴㅇㄹ",]]
+    var testList = [["테스트 데이터 1", "테스트 데이터2", "테스트 데이터3", "ㅁㄴㅇㄹ", "asjdfsidgh"]]
     
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
 
@@ -22,13 +22,26 @@ class ViewController: UIViewController {
         return button
     }()
     
+    @objc func didTapAddButtonAlert(_ sender: Any) {
+        let alert = UIAlertController(title: "Todo를 추가하시겠습니까?", message: nil, preferredStyle: UIAlertController.Style.alert)
+        let okAction = UIAlertAction(title: "OK", style: .default){ (action) in
+            self.didTapAddButton()
+        }
+        let cancel = UIAlertAction(title: "cancel", style: .destructive, handler : nil)
+        alert.addAction(cancel)
+        alert.addAction(okAction)
+        present(alert, animated: true, completion: nil)
+    }
+
+   
+  
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupUI()
         
-        self.button.addTarget(self, action: #selector(didTapAddButton), for: .touchUpInside)
+        self.button.addTarget(self, action: #selector(didTapAddButtonAlert), for: .touchUpInside)
     }
     private func setupUI() {
         self.view.addSubview(self.tableView)
@@ -91,3 +104,4 @@ struct todo {
 #Preview {
   ViewController()
 }
+   
