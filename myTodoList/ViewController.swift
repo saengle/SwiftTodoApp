@@ -11,7 +11,7 @@ class ViewController: UIViewController {
     
     var todoList: Array<todo> = []
     var todoRealList: Array<Array<todo>> = []
-    
+    var todoTitle: String = ""
     var testList = [["테스트 데이터 1", "테스트 데이터2", "테스트 데이터3", "ㅁㄴㅇㄹ", "asjdfsidgh"]]
     
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
@@ -23,14 +23,23 @@ class ViewController: UIViewController {
     }()
     
     @objc func didTapAddButtonAlert(_ sender: Any) {
-        let alert = UIAlertController(title: "Todo를 추가하시겠습니까?", message: nil, preferredStyle: UIAlertController.Style.alert)
-        let okAction = UIAlertAction(title: "OK", style: .default){ (action) in
-            self.didTapAddButton()
+        let controller = UIAlertController(title: "Todo를 추가하시겠습니까?", message: nil, preferredStyle: UIAlertController.Style.alert)
+        controller.addTextField { field in
+            field.placeholder = "Write todo here"
         }
+        let okAction = UIAlertAction(title: "OK", style: .default){ (action) in
+            if let firstTextField = controller.textFields?.first {
+                self.todoTitle = firstTextField.text ?? ""
+                }
+            self.didTapAddButton()
+            print(self.todoTitle)
+            }
+        
         let cancel = UIAlertAction(title: "cancel", style: .destructive, handler : nil)
-        alert.addAction(cancel)
-        alert.addAction(okAction)
-        present(alert, animated: true, completion: nil)
+       
+        controller.addAction(cancel)
+        controller.addAction(okAction)
+        present(controller, animated: true, completion: nil)
     }
 
    
@@ -65,7 +74,7 @@ class ViewController: UIViewController {
     
     @objc func didTapAddButton() {
         print("버튼 누름")
-        let myTodo = todo(id: todoList.count, title: "훌랄라 숯불 바베큐\(todoList.count)", isDone: false)
+        let myTodo = todo(id: todoList.count, title: "\(self.todoTitle)", isDone: false)
         todoList.append(myTodo)
         todoRealList = [todoList]
         tableView.reloadData()
