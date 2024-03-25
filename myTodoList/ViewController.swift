@@ -9,10 +9,7 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    var todoList: Array<todo> = []
-    var todoRealList: Array<Array<todo>> = []
-    var todoTitle: String = ""
-    var testList = [["테스트 데이터 1", "테스트 데이터2", "테스트 데이터3", "ㅁㄴㅇㄹ", "asjdfsidgh"]]
+    let todoViewModel = TodoViewModel()
     
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
 
@@ -29,10 +26,15 @@ class ViewController: UIViewController {
         }
         let okAction = UIAlertAction(title: "OK", style: .default){ (action) in
             if let firstTextField = controller.textFields?.first {
-                self.todoTitle = firstTextField.text ?? ""
+//                self.todoTitle = firstTextField.text ?? ""
+                if firstTextField.text == "" {
+                    self.todoViewModel.todoTitle = "입력된 값이 없습니다." // alert 위에 alert 로 입력된 값이 없다고 말해주는게 맞나 ..? // alert 위 alert 가 되기는 하나 ?????
+                } else {
+                    self.todoViewModel.todoTitle = firstTextField.text!
+                }
                 }
             self.didTapAddButton()
-            print(self.todoTitle)
+            print(self.todoViewModel.todoTitle)
             }
         
         let cancel = UIAlertAction(title: "cancel", style: .destructive, handler : nil)
@@ -74,30 +76,45 @@ class ViewController: UIViewController {
     
     @objc func didTapAddButton() {
         print("버튼 누름")
-        let myTodo = todo(id: todoList.count, title: "\(self.todoTitle)", isDone: false)
-        todoList.append(myTodo)
-        todoRealList = [todoList]
+        let myTodo = todo(id: todoViewModel.todoList.count, title: "\(self.todoViewModel.todoTitle)", isDone: false)
+        todoViewModel.todoList.append(myTodo)
+        todoViewModel.todoRealList = [todoViewModel.todoList]
         tableView.reloadData()
     }
 }
 
-extension ViewController: UITableViewDataSource {
+extension ViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if todoRealList.isEmpty {
-            return testList[section].count
-        } else {return todoRealList[section].count}
+        if todoViewModel.todoRealList.isEmpty {
+            return todoViewModel.testList[section].count
+        } else {return todoViewModel.todoRealList[section].count}
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .default, reuseIdentifier: .none)
         cell.imageView?.image = UIImage(systemName: "square")
-        if todoRealList.isEmpty {
-            cell.textLabel?.text = testList[indexPath.section][indexPath.row]
-        } else {cell.textLabel?.text = todoRealList[indexPath.section][indexPath.row].title}
+        if todoViewModel.todoRealList.isEmpty {
+            cell.textLabel?.text = todoViewModel.testList[indexPath.section][indexPath.row]
+        } else {cell.textLabel?.text = todoViewModel.todoRealList[indexPath.section][indexPath.row].title}
 
         return cell
     }
+//    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+//          if editingStyle == .delete {
+//              myDataSource.remove(at: indexPath, to: tableView)
+//          }
+//      }
+}
+
+class TodoViewModel {
+    var todoList: Array<todo> = []
+    var todoRealList: Array<Array<todo>> = []
+    var todoTitle: String = ""
+    var testList = [["테스트 데이터 1", "테스트 데이터2", "테스트 데이터3", "ㅁㄴㅇㄹ", "asjdfsidgh"]]
+    
+    
+    
 }
 
 struct todo {
