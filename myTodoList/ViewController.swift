@@ -19,7 +19,7 @@ class ViewController: UIViewController {
         return button
     }()
     
-    @objc func didTapAddButtonAlert(_ sender: Any) {
+    @objc func didTapAddAlertButton(_ sender: Any) {
         let controller = UIAlertController(title: "Todo를 추가하시겠습니까?", message: nil, preferredStyle: UIAlertController.Style.alert)
         controller.addTextField { field in
             field.placeholder = "Write todo here"
@@ -33,7 +33,7 @@ class ViewController: UIViewController {
                     self.todoViewModel.todoTitle = firstTextField.text!
                 }
                 }
-            self.didTapAddButton()
+            self.didTapAlertOkButton()
             print(self.todoViewModel.todoTitle)
             }
         
@@ -45,14 +45,12 @@ class ViewController: UIViewController {
     }
 
    
-  
-    
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupUI()
         
-        self.button.addTarget(self, action: #selector(didTapAddButtonAlert), for: .touchUpInside)
+        self.button.addTarget(self, action: #selector(didTapAddAlertButton), for: .touchUpInside)
     }
     private func setupUI() {
         self.view.addSubview(self.tableView)
@@ -74,47 +72,51 @@ class ViewController: UIViewController {
         ])
     }
     
-    @objc func didTapAddButton() {
-        print("버튼 누름")
+    @objc func didTapAlertOkButton() {
         let myTodo = todo(id: todoViewModel.todoList.count, title: "\(self.todoViewModel.todoTitle)", isDone: false)
-        todoViewModel.todoList.append(myTodo)
-        todoViewModel.todoRealList = [todoViewModel.todoList]
-        tableView.reloadData()
+//        todoViewModel.todoList.append(myTodo)
+//        todoViewModel.todoRealList = [todoViewModel.todoList]
+
+        todoViewModel.append(todo: myTodo)
+                tableView.reloadData()
     }
 }
 
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if todoViewModel.todoRealList.isEmpty {
-            return todoViewModel.testList[section].count
-        } else {return todoViewModel.todoRealList[section].count}
+       return todoViewModel.todoList.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .default, reuseIdentifier: .none)
         cell.imageView?.image = UIImage(systemName: "square")
-        if todoViewModel.todoRealList.isEmpty {
-            cell.textLabel?.text = todoViewModel.testList[indexPath.section][indexPath.row]
-        } else {cell.textLabel?.text = todoViewModel.todoRealList[indexPath.section][indexPath.row].title}
-
+        cell.textLabel?.text = todoViewModel.todoList[indexPath.row].title
         return cell
     }
-//    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-//          if editingStyle == .delete {
-//              myDataSource.remove(at: indexPath, to: tableView)
-//          }
-//      }
+    
+     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+          if editingStyle == .delete {
+              self.todoViewModel.remove(at: indexPath, to: tableView)
+              tableView.deleteRows(at: [indexPath], with: .automatic)
+          }
+         tableView.reloadData()
+      }
+   
 }
 
 class TodoViewModel {
     var todoList: Array<todo> = []
-    var todoRealList: Array<Array<todo>> = []
     var todoTitle: String = ""
-    var testList = [["테스트 데이터 1", "테스트 데이터2", "테스트 데이터3", "ㅁㄴㅇㄹ", "asjdfsidgh"]]
+    func append(todo: todo) {
+        todoList.append(todo)
+//        tableView.insertRows(at: [IndexPath(row: todoList.count-1, section: 0)], with: .automatic)
+    }
     
-    
-    
+    func remove(at indexPath: IndexPath, to tableView: UITableView) {
+        todoList.remove(at: indexPath.row)
+        
+    }
 }
 
 struct todo {
@@ -127,7 +129,7 @@ struct todo {
 //    let dueDate: String   기한설정 스트링 ?
 }
 
-#Preview {
-  ViewController()
-}
-   
+//#Preview {
+//  ViewController()
+//}
+//   
