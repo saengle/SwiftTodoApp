@@ -6,3 +6,14 @@
 //
 
 import Foundation
+import UIKit
+
+class DetailPageViewController: UIViewController {
+    var myTodoViewModel = TodoViewModel()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+    }
+    
+}

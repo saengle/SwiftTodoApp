@@ -5,7 +5,7 @@
 //  Created by 쌩 on 3/20/24.
 //
 
-//todo id 랜덤으로 같지 않게 주는거 적용해야함.
+//
 //
 import UIKit
 
@@ -76,7 +76,8 @@ class ViewController: UIViewController {
     }
     
     @objc func didTapAlertOkButton() {
-        let myTodo = todo(id: todoViewModel.todoList.count, title: "\(self.todoViewModel.tempTodoTitle)", isDone: false)
+        //Random한 아이디 생성
+        let myTodo = todo(id: NSUUID().uuidString, title: "\(self.todoViewModel.tempTodoTitle)", isDone: false)
         todoViewModel.append(todo: myTodo)
                 tableView.reloadData()
     }
@@ -141,7 +142,7 @@ class TodoViewModel {
 }
 
 struct todo {
-    var id: Int
+    var id: String
     var title: String
     var isDone: Bool
 //    var importance: Int
