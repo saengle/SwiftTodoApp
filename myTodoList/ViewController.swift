@@ -135,9 +135,7 @@ class TodoViewModel {
     }
     
     func changeIsDone(at indexPathRow: Int) {
-        print(todoList[indexPathRow].isDone)
         todoList[indexPathRow].isDone = !todoList[indexPathRow].isDone
-        print(todoList[indexPathRow].isDone)
     }
 }
 
