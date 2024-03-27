@@ -5,6 +5,8 @@
 //  Created by 쌩 on 3/20/24.
 //
 
+//todo id 랜덤으로 같지 않게 주는거 적용해야함.
+//
 import UIKit
 
 class ViewController: UIViewController {
@@ -13,7 +15,7 @@ class ViewController: UIViewController {
     
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
 
-    private let button: UIButton = {
+    private let addTodoButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "plus.circle"), for: .normal)
         return button
@@ -28,13 +30,13 @@ class ViewController: UIViewController {
             if let firstTextField = controller.textFields?.first {
 //                self.todoTitle = firstTextField.text ?? ""
                 if firstTextField.text == "" {
-                    self.todoViewModel.todoTitle = "입력된 값이 없습니다." // alert 위에 alert 로 입력된 값이 없다고 말해주는게 맞나 ..? // alert 위 alert 가 되기는 하나 ?????
+                    self.todoViewModel.tempTodoTitle = "입력된 값이 없습니다." // alert 위에 alert 로 입력된 값이 없다고 말해주는게 맞나 ..? // alert 위 alert 가 되기는 하나 ?????
                 } else {
-                    self.todoViewModel.todoTitle = firstTextField.text!
+                    self.todoViewModel.tempTodoTitle = firstTextField.text!
                 }
                 }
             self.didTapAlertOkButton()
-            print(self.todoViewModel.todoTitle)
+            print(self.todoViewModel.tempTodoTitle)
             }
         
         let cancel = UIAlertAction(title: "cancel", style: .destructive, handler : nil)
@@ -50,20 +52,21 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         self.setupUI()
         
-        self.button.addTarget(self, action: #selector(didTapAddAlertButton), for: .touchUpInside)
+        self.addTodoButton.addTarget(self, action: #selector(didTapAddAlertButton), for: .touchUpInside)
     }
+    
     private func setupUI() {
         self.view.addSubview(self.tableView)
-        self.view.addSubview(button)
+        self.view.addSubview(addTodoButton)
         
         self.tableView.dataSource = self
         self.tableView.backgroundColor = .white
-        self.button.translatesAutoresizingMaskIntoConstraints = false
+        self.addTodoButton.translatesAutoresizingMaskIntoConstraints = false
         self.tableView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            button.centerXAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -25),
-            button.centerYAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 15),
+            addTodoButton.centerXAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -25),
+            addTodoButton.centerYAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 15),
             
             self.tableView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 30),
             self.tableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
@@ -73,13 +76,15 @@ class ViewController: UIViewController {
     }
     
     @objc func didTapAlertOkButton() {
-        let myTodo = todo(id: todoViewModel.todoList.count, title: "\(self.todoViewModel.todoTitle)", isDone: false)
-//        todoViewModel.todoList.append(myTodo)
-//        todoViewModel.todoRealList = [todoViewModel.todoList]
-
+        let myTodo = todo(id: todoViewModel.todoList.count, title: "\(self.todoViewModel.tempTodoTitle)", isDone: false)
         todoViewModel.append(todo: myTodo)
                 tableView.reloadData()
     }
+    
+    @objc func toggleSwitchDidTap(_ sender: UISwitch) {
+        todoViewModel.changeIsDone(at: sender.tag)
+        tableView.reloadData()
+       }
 }
 
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
@@ -90,8 +95,20 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .default, reuseIdentifier: .none)
-        cell.imageView?.image = UIImage(systemName: "square")
+        cell.imageView?.image = todoViewModel.todoList[indexPath.row].isDone == true ? UIImage(systemName: "checkmark.square") : UIImage(systemName: "square")
         cell.textLabel?.text = todoViewModel.todoList[indexPath.row].title
+        
+        //UISwitch 호출
+        let switchView = UISwitch(frame: .zero)
+        // switch 초기화면 버튼이 누르지 않은 채로
+        switchView.setOn(todoViewModel.todoList[indexPath.row].isDone, animated: true)
+        //swtichView tag 지정
+        switchView.tag = indexPath.row
+        //switchView addTarget 지정
+        switchView.addTarget(self, action: #selector(self.toggleSwitchDidTap(_:)), for: .valueChanged)
+        //cell accessoryView를 switchView로 지정
+        cell.accessoryView = switchView
+        
         return cell
     }
     
@@ -102,20 +119,24 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
           }
          tableView.reloadData()
       }
-   
 }
 
 class TodoViewModel {
     var todoList: Array<todo> = []
-    var todoTitle: String = ""
+    var tempTodoTitle: String = ""
+    
     func append(todo: todo) {
         todoList.append(todo)
-//        tableView.insertRows(at: [IndexPath(row: todoList.count-1, section: 0)], with: .automatic)
     }
     
     func remove(at indexPath: IndexPath, to tableView: UITableView) {
         todoList.remove(at: indexPath.row)
-        
+    }
+    
+    func changeIsDone(at indexPathRow: Int) {
+        print(todoList[indexPathRow].isDone)
+        todoList[indexPathRow].isDone = !todoList[indexPathRow].isDone
+        print(todoList[indexPathRow].isDone)
     }
 }
 
