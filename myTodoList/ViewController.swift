@@ -47,7 +47,6 @@ class ViewController: UIViewController {
     }
 
    
-
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupUI()
@@ -86,6 +85,14 @@ class ViewController: UIViewController {
         todoViewModel.changeIsDone(at: sender.tag)
         tableView.reloadData()
        }
+    
+    //체크박스 클릭시 변환 이벤트
+    @objc func touchToPickPhoto(_ sender: UITapGestureRecognizer) {
+        if let unwrappedInt = sender.view?.tag {
+            todoViewModel.changeIsDone(at: unwrappedInt )
+        } else {}
+        tableView.reloadData()
+     }
 }
 
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
@@ -95,8 +102,15 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        // 셀 생성
         let cell = UITableViewCell(style: .default, reuseIdentifier: .none)
+        // 탭 제스쳐 생성 체크박스 이미지에 연결, 터치 동작 연결 (체크 <-> 넌체크)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.touchToPickPhoto(_:)))
         cell.imageView?.image = todoViewModel.todoList[indexPath.row].isDone == true ? UIImage(systemName: "checkmark.square") : UIImage(systemName: "square")
+        cell.imageView?.addGestureRecognizer(tapGesture)
+        cell.imageView?.isUserInteractionEnabled = true
+        tapGesture.view?.tag = indexPath.row
+
         cell.textLabel?.text = todoViewModel.todoList[indexPath.row].title
         
         //UISwitch 호출
