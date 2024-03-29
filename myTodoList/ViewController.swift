@@ -50,6 +50,8 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupUI()
+        // Mark: NavigationController 색이 왜 검게 나오지 ?? 그리고 이거 크기 못없애나 ..
+        navigationController?.view.backgroundColor = .white
         
         self.addTodoButton.addTarget(self, action: #selector(didTapAddAlertButton), for: .touchUpInside)
     }
@@ -87,13 +89,39 @@ class ViewController: UIViewController {
        }
     
     //체크박스 클릭시 변환 이벤트
-    @objc func touchToPickPhoto(_ sender: UITapGestureRecognizer) {
+    @objc func touchCheckBox(_ sender: UITapGestureRecognizer) {
         if let unwrappedInt = sender.view?.tag {
             todoViewModel.changeIsDone(at: unwrappedInt )
         } else {}
         tableView.reloadData()
      }
+    
+    // Mark: 셀 눌러서 디테일 화면으로 전환 (디테일 뷰 컨트롤러)
+    @objc func touchTodoDetailPage(sender: UITapGestureRecognizer) {
+        let detailPageViewController = DetailPageViewController()
+//        if let unwrappedInt = sender.view?.tag
+        // ;; 디테일 화면 = 디테일페이지뷰컨트롤러  로 연결한거같은데 왜 메인 스토리보드에 있는 디테일페이지뷰컨트롤러가 안나오는거지 ...
+            self.navigationController?.pushViewController(detailPageViewController, animated: true)
+    }
+    
 }
+// 네비게이션 바가 검은색으로 나오고 크기를 차지하길래 ... 없애고 싶은데 어떻게 하지 ?
+//extension UINavigationController {
+//    open override func viewDidLayoutSubviews() {
+//        super.viewDidLayoutSubviews()
+//        let height = CGFloat(0)
+//        navigationBar.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: height)
+//        navigationBar.isHidden = true
+//    }
+//}
+//
+//class TTNavigationBar: UINavigationBar {
+//
+//    override func sizeThatFits(_ size: CGSize) -> CGSize {
+//        return CGSize(width: UIScreen.main.bounds.width, height: 0)
+//    }
+//
+//}
 
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
     
@@ -105,13 +133,16 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
         // 셀 생성
         let cell = UITableViewCell(style: .default, reuseIdentifier: .none)
         // 탭 제스쳐 생성 체크박스 이미지에 연결, 터치 동작 연결 (체크 <-> 넌체크)
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.touchToPickPhoto(_:)))
+        let imageTapGesture = UITapGestureRecognizer(target: self, action: #selector(self.touchCheckBox(_:)))
         cell.imageView?.image = todoViewModel.todoList[indexPath.row].isDone == true ? UIImage(systemName: "checkmark.square") : UIImage(systemName: "square")
-        cell.imageView?.addGestureRecognizer(tapGesture)
+        cell.imageView?.addGestureRecognizer(imageTapGesture)
         cell.imageView?.isUserInteractionEnabled = true
-        tapGesture.view?.tag = indexPath.row
-
+        imageTapGesture.view?.tag = indexPath.row
+        
+        // 셀 누르면 디테일 페이지로 이동 추가
+        let cellTapGesture = UITapGestureRecognizer(target: self, action: #selector(self.touchTodoDetailPage(sender:)))
         cell.textLabel?.text = todoViewModel.todoList[indexPath.row].title
+        cell.addGestureRecognizer(cellTapGesture)
         
         //UISwitch 호출
         let switchView = UISwitch(frame: .zero)

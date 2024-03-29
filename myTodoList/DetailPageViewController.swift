@@ -8,12 +8,14 @@
 import Foundation
 import UIKit
 
-class DetailPageViewController: UIViewController {
+ class DetailPageViewController: UIViewController {
     var myTodoViewModel = TodoViewModel()
     
-    override func viewDidLoad() {
+     @IBOutlet weak var myTestLabel: UILabel!
+     override func viewDidLoad() {
         super.viewDidLoad()
-
+         title = "테스트다"
+         
     }
     
 }
